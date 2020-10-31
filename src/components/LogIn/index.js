@@ -1,4 +1,5 @@
-import React from 'react';
+import React, {useState} from 'react';
+import { useHistory } from "react-router-dom";
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -7,14 +8,17 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import FormHelperText from '@material-ui/core/FormHelperText';
 
 // Components
 import Footer from '../../layouts/Footer';
+
+// Constant && Services
+import AuthService from '../../services/auth.service';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -34,10 +38,45 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  formMessage: {
+      textAlign: 'center',
+      fontSize: '1.1em'
+  }
 }));
 
 export default function LogIn() {
+  const history = useHistory();
+  if (AuthService.getCurrentUser()){
+      history.push('/dashboard');
+  }
   const classes = useStyles();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [errorMsg, setErrMsg] = useState('');
+
+  function handleLogIn(event){
+    event.preventDefault()
+    if (!username || !password){
+        return;
+    }
+    const fetch = AuthService.logIn(username, password).then(result => {
+        if (result.isSuccess){
+            history.push('/dashboard');
+        } else {
+            // Error message
+            setErrMsg(result.message);
+        }
+    });
+    console.log(fetch);
+  }
+
+  function handleUsernameChange(evt){
+    setUsername(evt.target.value);
+  }
+
+  function handlePasswordChange(evt){
+    setPassword(evt.target.value);
+    }
 
   return (
     <Container component="main" maxWidth="xs">
@@ -49,17 +88,20 @@ export default function LogIn() {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <form className={classes.form} noValidate>
+        <form className={classes.form} onSubmit={(evt) => handleLogIn(evt)}>
           <TextField
             variant="outlined"
             margin="normal"
             required
             fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
+            id="username"
+            label="Username"
+            name="username"
+            autoComplete="username"
             autoFocus
+            error={username === ""}
+            helperText={username === "" ? 'Hãy nhập Username' : ' '}
+            onChange={(evt) => handleUsernameChange(evt)}
           />
           <TextField
             variant="outlined"
@@ -71,7 +113,13 @@ export default function LogIn() {
             type="password"
             id="password"
             autoComplete="current-password"
+            error={password === ""}
+            helperText={password === "" ? 'Hãy nhập Username' : ' '}
+            onChange={(evt) => handlePasswordChange(evt)}
           />
+          <FormHelperText className={classes.formMessage} error={true}>
+              {errorMsg}
+          </FormHelperText>
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
@@ -98,7 +146,6 @@ export default function LogIn() {
             </Grid>
           </Grid>
         </form>
-        <Footer />
       </div>
     </Container>
   );

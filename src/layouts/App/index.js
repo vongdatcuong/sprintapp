@@ -3,7 +3,8 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link
+  Link,
+  Redirect
 } from "react-router-dom";
 import './App.css';
 // Material UI Core
@@ -33,7 +34,7 @@ function App() {
               <Header/>
               <SignUp/>
           </Route>
-          <Route path="/">
+          <Route path="/dashboard">
             {/* Header */}
             <Header/>
             {/* End Header */}
@@ -41,6 +42,9 @@ function App() {
             {/* Footer */}
             <Footer/>
             {/* End footer */}
+          </Route>
+          <Route path="/">
+            <Redirect to="/dashboard"/>
           </Route>
         </Switch>
       </Router>

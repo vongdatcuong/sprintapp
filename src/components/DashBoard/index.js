@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import { useHistory } from "react-router-dom";
 import './DashBoard.css';
 import API from '../../Utils';
 // Material UI Core
@@ -18,7 +19,9 @@ import AddCircleIcon from '@material-ui/icons/AddCircle';
 import ScheduleIcon from '@material-ui/icons/Schedule';
 
 // Components
-
+// Service
+import authHeader from '../../services/auth-header.js';
+import AuthService from '../../services/auth.service';
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -89,10 +92,18 @@ const useStyles = makeStyles((theme) => ({
 const monthStrs = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', "Aug", 'Sep', 'Oct', 'Nov', 'Dec'];
 
 function DashBoard() {
+  const history = useHistory();
+  if (!AuthService.getCurrentUser()){
+      history.push('/logIn');
+  }
+
   const classes = useStyles();
   const [boards, setBoards] = useState([]);
   useEffect(() => {
-    fetch(API.api + API.allBoardPath)
+    console.log(authHeader());
+    fetch(API.api + API.allBoardPath, {
+      headers: authHeader()
+    })
       .then(res => res.json())
       .then(
         (result) => {
