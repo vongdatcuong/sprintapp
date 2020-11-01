@@ -5,7 +5,8 @@ const api = 'http://localhost:8080';
 const boardPath = '/board';
 const allBoardPath = '/boards';
 const myBoardPath = '/myBoard';
-const addBoard = '/addBoard';
+const addBoard = '/add';
+const deleteBoard = '/delete'
 
 // User
 const userPath = '/user';
@@ -25,6 +26,7 @@ export default {
     allBoardPath,
     myBoardPath,
     addBoard,
+    deleteBoard,
     // User
     userPath,
     logInPath,

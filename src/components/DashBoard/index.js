@@ -14,12 +14,13 @@ import Container from '@material-ui/core/Container';
 
 // Material Icons
 import LinkIcon from '@material-ui/icons/Link';
-import FileCopyIcon from '@material-ui/icons/FileCopy';
+import DeleteIcon from '@material-ui/icons/Delete';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import ScheduleIcon from '@material-ui/icons/Schedule';
 
 // Components
 import AddBoardDialog from './AddBoardDialog.js';
+import ConfirmDialog from '../../dialogs/ConfirmDialog';
 
 // Service
 import authHeader from '../../services/auth-header.js';
@@ -100,7 +101,10 @@ function DashBoard(props) {
   const classes = useStyles();
   const user = AuthService.getCurrentUser();
   const [boards, setBoards] = useState([]);
-  const [open, setOpen] = useState(false);
+  const [openAdd, setOpenAdd] = useState(false);
+  const [openDel, setOpenDel] = useState(false);
+  const [delBoard, setDelBoard] = useState(null);
+
   useEffect(() => {
     props.setIsLoading(true);
     const requestOptions = {
@@ -131,15 +135,53 @@ function DashBoard(props) {
     newBoards.push(board);
     setBoards(newBoards);
   }
+
+  const handleDeleteBoard = (boardID) => {
+    const user = AuthService.getCurrentUser();
+    if (!boardID || !user){
+        return;
+    }
+    props.setIsLoading(true);
+    const requestOptions = {
+        method: 'POST',
+        headers: Object.assign({
+            'Content-Type': 'application/json'   
+        }, authHeader()),
+        body: JSON.stringify({ 
+            boardID: boardID,
+            userID: user.userID,
+        })
+    };
+    return fetch(constant.api + constant.allBoardPath + constant.deleteBoard, requestOptions)
+        .then(response => response.json())
+        .then(result => {
+            if (result.isSuccess){
+                const newBoards2 = boards.filter((board, idx) => board.boardID !== boardID);
+                setBoards(newBoards2);
+            }
+            props.setIsLoading(false);
+    }, (error) => {
+        if (error) {
+          props.setIsLoading(false);
+        }
+      })
+  }
+
+  const openDeleteDialog = (board) => {
+    setDelBoard(board);
+    setOpenDel(true);
+  }
+
   return (
     <main>
       <Container className={classes.cardGrid} maxWidth="md">
-        <AddBoardDialog open={open} setOpen={setOpen} addBoard={addBoard} setIsLoading={props.setIsLoading}/>
+        <AddBoardDialog open={openAdd} setOpen={setOpenAdd} addBoard={addBoard} setIsLoading={props.setIsLoading}/>
+        <ConfirmDialog open={openDel} setOpen={setOpenDel} action={() => handleDeleteBoard(delBoard.boardID)}>Confirm to delete board <b>{(delBoard)? delBoard.name : ''}</b></ConfirmDialog>
         <Typography gutterBottom variant="h4" component="h2" className="title-blue" style={{fontWeight: '500'}}>
           My Boards
         </Typography>            
         <Grid container spacing={4}>
-          <Grid item xs={8} sm={4} md={3} onClick={() => setOpen(true)}>
+          <Grid item xs={8} sm={4} md={3} onClick={() => setOpenAdd(true)}>
               <Card className={classes.addCard}>
                 <CardContent className={classes.cardContent}>
                   <Typography gutterBottom variant="h6" component="h2">
@@ -175,9 +217,9 @@ function DashBoard(props) {
                     <LinkIcon className={classes.actionIcons}/>
                     URL
                   </Button>
-                  <Button size="small" color="primary" className={classes.actionBtn}>
-                    <FileCopyIcon className={classes.actionIcons}/>
-                    CLONE
+                  <Button size="small" color="primary" className={classes.actionBtn} onClick={(evt) => openDeleteDialog(board)}>
+                    <DeleteIcon className={classes.actionIcons}/>
+                    DELETE
                   </Button>
                 </CardActions>
               </Card>
