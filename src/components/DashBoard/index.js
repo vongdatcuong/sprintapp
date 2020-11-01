@@ -19,9 +19,12 @@ import AddCircleIcon from '@material-ui/icons/AddCircle';
 import ScheduleIcon from '@material-ui/icons/Schedule';
 
 // Components
+import AddBoardDialog from './AddBoardDialog.js';
+
 // Service
 import authHeader from '../../services/auth-header.js';
 import AuthService from '../../services/auth.service';
+import constant from '../../Utils';
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -52,9 +55,6 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   card: {
-    height: '80%',
-    display: 'flex',
-    flexDirection: 'column',
     cursor: 'pointer',
     '&:hover': {
       boxShadow: '0 2px 5px 0 rgba(0,0,0,0.16), 0 2px 10px 0 rgba(0,0,0,0.12)'
@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
   },
   cardContent: {
     flexGrow: 1,
-    margon: '3px'
+    margin: '3px'
   },
   action: {
     justifyContent: 'center',
@@ -98,12 +98,18 @@ function DashBoard(props) {
   }
 
   const classes = useStyles();
+  const user = AuthService.getCurrentUser();
   const [boards, setBoards] = useState([]);
+  const [open, setOpen] = useState(false);
   useEffect(() => {
     props.setIsLoading(true);
-    fetch(API.api + API.allBoardPath, {
-      headers: authHeader()
-    })
+    const requestOptions = {
+      method: 'GET',
+      headers: authHeader(),
+    };
+    fetch(constant.api + constant.allBoardPath + constant.myBoardPath + "?" + constant.queryParams({
+      userID: user.userID
+    }), requestOptions)
       .then(res => res.json())
       .then(
         (result) => {
@@ -119,14 +125,21 @@ function DashBoard(props) {
     )
   }, [])
 
+  const addBoard = (board) => {
+    board.createdDate = new Date(board.createdDate);
+    const newBoards = boards.slice();
+    newBoards.push(board);
+    setBoards(newBoards);
+  }
   return (
     <main>
       <Container className={classes.cardGrid} maxWidth="md">
+        <AddBoardDialog open={open} setOpen={setOpen} addBoard={addBoard} setIsLoading={props.setIsLoading}/>
         <Typography gutterBottom variant="h4" component="h2" className="title-blue" style={{fontWeight: '500'}}>
           My Boards
         </Typography>            
         <Grid container spacing={4}>
-          <Grid item xs={8} sm={4} md={3}>
+          <Grid item xs={8} sm={4} md={3} onClick={() => setOpen(true)}>
               <Card className={classes.addCard}>
                 <CardContent className={classes.cardContent}>
                   <Typography gutterBottom variant="h6" component="h2">

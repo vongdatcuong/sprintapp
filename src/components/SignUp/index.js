@@ -122,7 +122,7 @@ export default function SignUp(props) {
                 label="Username"
                 autoFocus
                 error={username === ""}
-                helperText={username === "" ? 'Hãy nhập Username' : ' '}
+                helperText={username === "" ? 'Enter Username' : ' '}
                 onChange={(evt) => handleUsernameChange(evt)}
               />
             </Grid>
@@ -137,7 +137,7 @@ export default function SignUp(props) {
                 id="password"
                 autoComplete="current-password"
                 error={(password === "" || repassword === "" || password !== repassword)}
-                helperText={(password === "" || repassword === "" || password !== repassword)? 'Xác nhận Password chưa đúng' : ' '}
+                helperText={(password === "" || repassword === "" || password !== repassword)? 'Confirm Password incorrect' : ' '}
                 onChange={(evt) => handlePasswordChange(evt)}
               />
             </Grid>
@@ -152,7 +152,7 @@ export default function SignUp(props) {
                 id="re-password"
                 autoComplete="re-password"
                 error={(password === "" || repassword === "" || password !== repassword)}
-                helperText={(password === "" || repassword === "" || password !== repassword)? 'Xác nhận Password chưa đúng' : ' '}
+                helperText={(password === "" || repassword === "" || password !== repassword)? 'Confirm Password incorrect' : ' '}
                 onChange={(evt) => handleRePasswordChange(evt)}
               />
             </Grid>
@@ -167,7 +167,7 @@ export default function SignUp(props) {
                 label="Full name"
                 autoFocus
                 error={name === ""}
-                helperText={name === "" ? 'Hãy nhập tên' : ' '}
+                helperText={name === "" ? 'Enter Name' : ' '}
                 onChange={(evt) => handleNameChange(evt)}
               />
             </Grid>
@@ -183,7 +183,7 @@ export default function SignUp(props) {
                 label="Email"
                 autoFocus
                 error={email === ""}
-                helperText={email === "" ? 'Hãy nhập email' : ' '}
+                helperText={email === "" ? 'Enter Email' : ' '}
                 onChange={(evt) => handleEmailChange(evt)}
               />
             </Grid>

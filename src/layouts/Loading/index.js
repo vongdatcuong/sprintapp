@@ -6,7 +6,7 @@ const override = {
     display: 'block',
     left: '40%',
     top: '30%',
-    zIndex: '999'
+    zIndex: '9999'
 };
 
 export default function Loading(props){
