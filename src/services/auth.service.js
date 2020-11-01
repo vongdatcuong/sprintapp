@@ -33,6 +33,28 @@ class AuthService {
         localStorage.removeItem("user");
     }
 
+    signUp(username, password, name, email) {
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                username: username,
+                password: password,
+                name: name,
+                email: email
+            })
+        };
+        return fetch(constant.api + constant.userPath + constant.signUpPath, requestOptions)
+            .then(response => response.json())
+            .then(result => {
+                return {
+                    isSuccess: result.isSuccess,
+                    message: result.message
+                };
+                
+            })
+    }
+
     getCurrentUser() {
         return JSON.parse(localStorage.getItem('user'));;
     }

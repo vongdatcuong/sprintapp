@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function LogIn() {
+export default function LogIn(props) {
   const history = useHistory();
   if (AuthService.getCurrentUser()){
       history.push('/dashboard');
@@ -59,6 +59,7 @@ export default function LogIn() {
     if (!username || !password){
         return;
     }
+    props.setIsLoading(true);
     const fetch = AuthService.logIn(username, password).then(result => {
         if (result.isSuccess){
             history.push('/dashboard');
@@ -66,8 +67,12 @@ export default function LogIn() {
             // Error message
             setErrMsg(result.message);
         }
+        props.setIsLoading(false);
+    }, (error) => {
+      if (error) {
+        props.setIsLoading(false);
+      }
     });
-    console.log(fetch);
   }
 
   function handleUsernameChange(evt){
@@ -76,7 +81,7 @@ export default function LogIn() {
 
   function handlePasswordChange(evt){
     setPassword(evt.target.value);
-    }
+  }
 
   return (
     <Container component="main" maxWidth="xs">
@@ -114,7 +119,7 @@ export default function LogIn() {
             id="password"
             autoComplete="current-password"
             error={password === ""}
-            helperText={password === "" ? 'Hãy nhập Username' : ' '}
+            helperText={password === "" ? 'Hãy nhập password' : ' '}
             onChange={(evt) => handlePasswordChange(evt)}
           />
           <FormHelperText className={classes.formMessage} error={true}>

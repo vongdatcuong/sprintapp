@@ -8,6 +8,7 @@ const allBoardPath = '/boards';
 // User
 const userPath = '/user';
 const logInPath = '/logIn';
+const signUpPath = '/signUp';
 
 export default {
     api,
@@ -16,5 +17,6 @@ export default {
     allBoardPath,
     // User
     userPath,
-    logInPath
+    logInPath,
+    signUpPath
 }

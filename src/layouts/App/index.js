@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   BrowserRouter as Router,
   Switch,
@@ -16,29 +16,32 @@ import Footer from '../Footer';
 import DashBoard from '../../components/DashBoard';
 import LogIn from '../../components/LogIn';
 import SignUp from '../../components/SignUp';
+import Loading from '../../layouts/Loading';
 
 function App() {
-
+  const [isLoading, setIsLoading] = useState(false);
+  
   return (
     <React.Fragment>
       <CssBaseline />
+      <Loading loading={isLoading}/>
       <Router>
         <Switch>
           <Route path="/logIn">
               {/* Header */}
               <Header/>
-              <LogIn/>
+              <LogIn setIsLoading={setIsLoading}/>
           </Route>
           <Route path="/signUp">
               {/* Header */}
               <Header/>
-              <SignUp/>
+              <SignUp setIsLoading={setIsLoading}/>
           </Route>
           <Route path="/dashboard">
             {/* Header */}
             <Header/>
             {/* End Header */}
-            <DashBoard/>
+            <DashBoard setIsLoading={setIsLoading}/>
             {/* Footer */}
             <Footer/>
             {/* End footer */}

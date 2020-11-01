@@ -91,7 +91,7 @@ const useStyles = makeStyles((theme) => ({
 
 const monthStrs = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', "Aug", 'Sep', 'Oct', 'Nov', 'Dec'];
 
-function DashBoard() {
+function DashBoard(props) {
   const history = useHistory();
   if (!AuthService.getCurrentUser()){
       history.push('/logIn');
@@ -100,7 +100,7 @@ function DashBoard() {
   const classes = useStyles();
   const [boards, setBoards] = useState([]);
   useEffect(() => {
-    console.log(authHeader());
+    props.setIsLoading(true);
     fetch(API.api + API.allBoardPath, {
       headers: authHeader()
     })
@@ -111,12 +111,13 @@ function DashBoard() {
             board.createdDate = new Date(board.createdDate);
           })
           setBoards(result);
+          props.setIsLoading(false);
         },
         (error) => {
-          
+          props.setIsLoading(false);
         }
     )
-  })
+  }, [])
 
   return (
     <main>
