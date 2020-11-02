@@ -73,7 +73,8 @@ const useStyles = makeStyles((theme) => ({
   },
   actionIcons: {
     fontSize: '15px',
-    marginRight: '5px'
+    marginRight: '5px',
+    verticalAlign: 'top'
   },
   info: {
     color: '#888888',
@@ -90,7 +91,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const monthStrs = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', "Aug", 'Sep', 'Oct', 'Nov', 'Dec'];
+const monthStrs = ['January', 'February', 'March', 'April', 'May', 'June', 'July', "August", 'September', 'October', 'November', 'December'];
 
 function DashBoard(props) {
   const history = useHistory();
@@ -203,9 +204,9 @@ function DashBoard(props) {
                   <div className={classes.info}>
                     <div className="info-time">
                         <span><ScheduleIcon className={classes.actionIcons}/>
-                          {board.createdDate.getDate()}  &nbsp;
-                          {monthStrs[board.createdDate.getMonth()]}
                         </span>
+                        {board.createdDate.getDate()}  &nbsp;
+                          {monthStrs[board.createdDate.getMonth()]}
                     </div>
                     <div className="info-numOfCard">
                       <span>{board.numOfCard} Cards</span> 

@@ -12,6 +12,7 @@ const deleteBoard = '/delete'
 const userPath = '/user';
 const logInPath = '/logIn';
 const signUpPath = '/signUp';
+const updateProfilePath = '/updateProfile';
 
 function queryParams(params) {
     return Object.keys(params)
@@ -31,6 +32,7 @@ export default {
     userPath,
     logInPath,
     signUpPath,
+    updateProfilePath,
     // 
     queryParams
 }

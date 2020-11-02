@@ -165,7 +165,6 @@ export default function SignUp(props) {
                 fullWidth
                 id="fullName"
                 label="Full name"
-                autoFocus
                 error={name === ""}
                 helperText={name === "" ? 'Enter Name' : ' '}
                 onChange={(evt) => handleNameChange(evt)}
@@ -181,7 +180,6 @@ export default function SignUp(props) {
                 fullWidth
                 id="email"
                 label="Email"
-                autoFocus
                 error={email === ""}
                 helperText={email === "" ? 'Enter Email' : ' '}
                 onChange={(evt) => handleEmailChange(evt)}

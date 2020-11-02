@@ -56,7 +56,13 @@ class AuthService {
     }
 
     getCurrentUser() {
-        return JSON.parse(localStorage.getItem('user'));;
+        return JSON.parse(localStorage.getItem('user'));
+    }
+
+    updateCurrentUser(newUser){
+        const user = Object.assign({}, JSON.parse(localStorage.getItem('user')), newUser);
+        localStorage.removeItem("user");
+        localStorage.setItem("user", JSON.stringify(user));
     }
   }
   

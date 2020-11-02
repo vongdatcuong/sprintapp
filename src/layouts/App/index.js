@@ -16,6 +16,7 @@ import Footer from '../Footer';
 import DashBoard from '../../components/DashBoard';
 import LogIn from '../../components/LogIn';
 import SignUp from '../../components/SignUp';
+import Profile from '../../components/Profile';
 import Loading from '../../layouts/Loading';
 
 function App() {
@@ -36,6 +37,11 @@ function App() {
               {/* Header */}
               <Header/>
               <SignUp setIsLoading={setIsLoading}/>
+          </Route>
+          <Route path="/profile">
+              {/* Header */}
+              <Header/>
+              <Profile setIsLoading={setIsLoading}/>
           </Route>
           <Route path="/dashboard">
             {/* Header */}
