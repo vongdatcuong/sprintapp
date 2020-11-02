@@ -46,8 +46,7 @@ export default function AddBoardDialog(props) {
         headers: Object.assign({
             'Content-Type': 'application/json'   
         }, authHeader()),
-        body: JSON.stringify({ 
-            userID: user.userID,
+        body: JSON.stringify({
             name: name
         })
     };

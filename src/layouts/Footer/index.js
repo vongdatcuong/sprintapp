@@ -1,36 +1,40 @@
 import React from 'react';
-// Material UI Core
+import CssBaseline from '@material-ui/core/CssBaseline';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-
-// Components
-import Copyright from './Copyright';
+import Container from '@material-ui/core/Container';
+import Link from '@material-ui/core/Link';
+import Copyright from './Copyright.js';
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    minHeight: '100vh',
+  },
+  main: {
+    marginTop: theme.spacing(8),
+    marginBottom: theme.spacing(2),
+  },
   footer: {
-    backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(6),
-    position: 'relative',
-    width: '100%',
-    bottom: 0,
-    zIndex: '-1'
+    padding: theme.spacing(3, 2),
+    marginTop: 'auto',
+    backgroundColor:
+      theme.palette.type === 'light' ? theme.palette.grey[200] : theme.palette.grey[800],
   },
 }));
 
-function Footer() {
+export default function StickyFooter() {
   const classes = useStyles();
+
   return (
-    <footer className={classes.footer}>
-        <Typography variant="h6" align="center" gutterBottom>
-          Sprint App
-        </Typography>
-        <Typography variant="subtitle1" align="center" color="textSecondary" component="p">
-          Make your own Agile/Scrum
-        </Typography>
-        <Copyright />
-    </footer>
+    <div className={classes.root}>
+      <footer className={classes.footer}>
+        <Container maxWidth="sm">
+          <Typography variant="body1"  align="center">Build your Agile/Scrum.</Typography>
+          <Copyright />
+        </Container>
+      </footer>
+    </div>
   );
 }
-
-
-export default Footer;

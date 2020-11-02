@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { useHistory } from "react-router-dom";
 import './DashBoard.css';
-import API from '../../Utils';
 // Material UI Core
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
@@ -112,9 +111,7 @@ function DashBoard(props) {
       method: 'GET',
       headers: authHeader(),
     };
-    fetch(constant.api + constant.allBoardPath + constant.myBoardPath + "?" + constant.queryParams({
-      userID: user.userID
-    }), requestOptions)
+    fetch(constant.api + constant.allBoardPath + constant.myBoardPath, requestOptions)
       .then(res => res.json())
       .then(
         (result) => {
@@ -149,8 +146,7 @@ function DashBoard(props) {
             'Content-Type': 'application/json'   
         }, authHeader()),
         body: JSON.stringify({ 
-            boardID: boardID,
-            userID: user.userID,
+            boardID: boardID
         })
     };
     return fetch(constant.api + constant.allBoardPath + constant.deleteBoard, requestOptions)
@@ -171,6 +167,10 @@ function DashBoard(props) {
   const openDeleteDialog = (board) => {
     setDelBoard(board);
     setOpenDel(true);
+  }
+
+  const toBoard = (boardID) => {
+    history.push(constant.boardPath + '/' + boardID);
   }
 
   return (
@@ -197,7 +197,7 @@ function DashBoard(props) {
           {boards.map((board) => (
             <Grid item key={board.boardID} xs={8} sm={4} md={3}>
               <Card className={classes.card}>
-                <CardContent className={classes.cardContent}>
+                <CardContent className={classes.cardContent} onClick={() => toBoard(board.boardID)}>
                   <Typography gutterBottom variant="h6" component="h2">
                     {board.name}
                   </Typography>

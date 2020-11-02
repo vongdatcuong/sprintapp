@@ -17,6 +17,7 @@ import DashBoard from '../../components/DashBoard';
 import LogIn from '../../components/LogIn';
 import SignUp from '../../components/SignUp';
 import Profile from '../../components/Profile';
+import Board from '../../components/Board';
 import Loading from '../../layouts/Loading';
 
 function App() {
@@ -48,6 +49,15 @@ function App() {
             <Header/>
             {/* End Header */}
             <DashBoard setIsLoading={setIsLoading}/>
+            {/* Footer */}
+            <Footer/>
+            {/* End footer */}
+          </Route>
+          <Route path="/board/:id">
+            {/* Header */}
+            <Header/>
+            {/* End Header */}
+            <Board setIsLoading={setIsLoading}/>
             {/* Footer */}
             <Footer/>
             {/* End footer */}

@@ -114,7 +114,6 @@ export default function SignUp(props) {
             'Content-Type': 'application/json'   
         }, authHeader()),
         body: JSON.stringify({ 
-            userID: user.userID,
             name: name,
             email: email,
             gender: gender
