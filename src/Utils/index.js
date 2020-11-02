@@ -7,6 +7,7 @@ const allBoardPath = '/boards';
 const myBoardPath = '/myBoard';
 const addBoard = '/add';
 const deleteBoard = '/delete'
+const updateBoardName = '/updateName'
 
 // User
 const userPath = '/user';
@@ -28,6 +29,7 @@ export default {
     myBoardPath,
     addBoard,
     deleteBoard,
+    updateBoardName,
     // User
     userPath,
     logInPath,
