@@ -15,9 +15,10 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import AddIcon from '@material-ui/icons/Add';
 import BorderColorIcon from '@material-ui/icons/BorderColor';
 import SaveIcon from '@material-ui/icons/Save';
+import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 
 // Components
-
+import ConfirmDialog from '../../dialogs/ConfirmDialog';
 
 // Service
 import authHeader from '../../services/auth-header.js';
@@ -40,14 +41,13 @@ const useStyles = makeStyles((theme) => ({
         paddingRight: theme.spacing(2),
     },
     card: {
-        cursor: 'pointer',
-        '&:hover': {
-            boxShadow: '0 2px 5px 0 rgba(0,0,0,0.16), 0 2px 10px 0 rgba(0,0,0,0.12)'
-        }
-        },
-        cardContent: {
-        flexGrow: 1,
-        margin: '3px'
+        position: 'relative'
+    },
+    deleteCardIcon: {
+        position: 'absolute',
+        top: '10%',
+        right: '5px',
+        cursor: 'pointer'
     },
     updateIcon: {
         marginLeft: '10px',
@@ -76,10 +76,15 @@ function Board(props) {
   const { id } = useParams(); 
   const classes = useStyles();
   const [board, setBoard] = useState({columns: []});
+  // Board
   const [newBoardName, setNewBoardName] = useState(board.name);
   const [isSuccess, setIsSuccess] = useState(true);
   const [errorMsg, setErrMsg] = useState('');
   const [isEditingBName, setIsEditingBName] = useState(false);
+
+  // Card
+  const [openDel, setOpenDel] = useState(false);
+  const [delCard, setDelCard] = useState(null);
   useEffect(() => {
     props.setIsLoading(true);
     const requestOptions = {
@@ -150,9 +155,52 @@ function Board(props) {
       setIsEditingBName(!isEditingBName);
   }
 
+  const handleDeleteCard = (deleteCard) => {
+    const user = AuthService.getCurrentUser();
+    if (!deleteCard || !user){
+        return;
+    }
+    props.setIsLoading(true);
+    const requestOptions = {
+        method: 'POST',
+        headers: Object.assign({
+            'Content-Type': 'application/json'   
+        }, authHeader()),
+        body: JSON.stringify({ 
+            cardID: deleteCard.cardID
+        })
+    };
+    return fetch(constant.api + constant.cardPath + constant.deleteCard, requestOptions)
+        .then(response => response.json())
+        .then(result => {
+            if (result.isSuccess){
+                const newBoard = Object.assign({}, board);
+                newBoard.columns = newBoard.columns.map((col, index) => {
+                    if (col.columnID === deleteCard.columnID){
+                        col.numOfCard--;
+                        col.cards = col.cards.filter((card, index2) => card.cardID != deleteCard.cardID);
+                    }
+                    return col;
+                })
+                setBoard(newBoard);
+            }
+            props.setIsLoading(false);
+    }, (error) => {
+        if (error) {
+          props.setIsLoading(false);
+        }
+      })
+  }
+
+  const openDeleteDialog = (card) => {
+    setDelCard(card);
+    setOpenDel(true);
+  }
+
   const bgcolor = ["primary.main", "secondary.main", "error.main"];
   const color = ["primary.contrastText", "secondary.contrastText", "error.contrastText"];
   const boardNameUI = [];
+
   if (isEditingBName){
       boardNameUI.push(<React.Fragment>
           <TextField
@@ -185,6 +233,7 @@ function Board(props) {
   return (
     <main>
       <Container className={classes.cardGrid} maxWidth="md">
+      <ConfirmDialog open={openDel} setOpen={setOpenDel} action={() => handleDeleteCard(delCard)}>Confirm to delete card <b>{(delCard)? delCard.content : ''}</b></ConfirmDialog>
         <Typography gutterBottom variant="h4" component="h2" className="title-blue" style={{fontWeight: '500'}}>
             {boardNameUI}
         </Typography>            
@@ -203,8 +252,11 @@ function Board(props) {
                                 <Box p={3} align="left" bgcolor={bgcolor[index % board.numOfCol]} color={color[index % board.numOfCol]} 
                                     border={3}
                                     borderColor="#888888"
-                                    marginTop={2}>
+                                    marginTop={2}
+                                    className={classes.card}
+                                    >
                                     <Typography>{card.content}</Typography>
+                                    <DeleteOutlineIcon className={classes.deleteCardIcon} onClick={(evt) => openDeleteDialog(card)}/>
                                 </Box>
                             )
                         })}
