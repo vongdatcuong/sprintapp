@@ -4,7 +4,7 @@ import {
   Switch,
   Route,
   Link,
-  Redirect
+  Redirect,
 } from "react-router-dom";
 import './App.css';
 // Material UI Core
@@ -28,7 +28,7 @@ function App() {
     <React.Fragment>
       <CssBaseline />
       <Loading loading={isLoading}/>
-      <Router>
+      <Router basename={process.env.PUBLIC_URL}>
         <Switch>
           <Route path="/logIn">
               {/* Header */}
