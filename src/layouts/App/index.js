@@ -18,6 +18,7 @@ import LogIn from '../../components/LogIn';
 import SignUp from '../../components/SignUp';
 import Profile from '../../components/Profile';
 import Board from '../../components/Board';
+import ShareBoard from '../../components/ShareBoard';
 import Loading from '../../layouts/Loading';
 
 function App() {
@@ -49,6 +50,15 @@ function App() {
             <Header/>
             {/* End Header */}
             <DashBoard setIsLoading={setIsLoading}/>
+            {/* Footer */}
+            <Footer/>
+            {/* End footer */}
+          </Route>
+          <Route path="/board/:userID/:boardID">
+            {/* Header */}
+            <Header/>
+            {/* End Header */}
+            <ShareBoard setIsLoading={setIsLoading}/>
             {/* Footer */}
             <Footer/>
             {/* End footer */}

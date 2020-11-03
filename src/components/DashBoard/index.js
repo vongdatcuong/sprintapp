@@ -173,6 +173,10 @@ function DashBoard(props) {
     history.push(constant.boardPath + '/' + boardID);
   }
 
+  const copyUrlToClipboard = (boardID) => {
+    navigator.clipboard.writeText(window.location.origin + constant.boardPath + `/${AuthService.getCurrentUser().userID}/${boardID}`)
+    alert('Copied URL');
+  }
   return (
     <main>
       <Container className={classes.cardGrid} maxWidth="md">
@@ -214,7 +218,7 @@ function DashBoard(props) {
                   </div>
                 </CardContent>
                 <CardActions className={classes.action}>
-                  <Button size="small" color="primary" className={classes.actionBtn}>
+                  <Button size="small" color="primary" className={classes.actionBtn} onClick={() => copyUrlToClipboard(board.boardID)}>
                     <LinkIcon className={classes.actionIcons}/>
                     URL
                   </Button>
