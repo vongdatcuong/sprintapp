@@ -16,6 +16,7 @@ import AddIcon from '@material-ui/icons/Add';
 import BorderColorIcon from '@material-ui/icons/BorderColor';
 import SaveIcon from '@material-ui/icons/Save';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
+import CreateIcon from '@material-ui/icons/Create';
 
 // Components
 import ConfirmDialog from '../../dialogs/ConfirmDialog';
@@ -47,6 +48,12 @@ const useStyles = makeStyles((theme) => ({
         position: 'absolute',
         top: '10%',
         right: '5px',
+        cursor: 'pointer'
+    },
+    updateCardIcon: {
+        position: 'absolute',
+        top: '10%',
+        right: '30px',
         cursor: 'pointer'
     },
     updateIcon: {
@@ -99,6 +106,8 @@ function Board(props) {
   // Add Card
   const [colAddCards, setColAddCards] = useState({});
 
+  // Update Cảd
+  const [colUpdateCards, setColUpdateCards] = useState({});
 
   useEffect(() => {
     props.setIsLoading(true);
@@ -115,11 +124,15 @@ function Board(props) {
             if (result.isSuccess){
                 setBoard(result.board);
                 setNewBoardName(result.board.name);
+                // Add & Update Card
                 const colObjs = {};
+                const colObjs2 = {};
                 result.board.columns.forEach((col, index) => {
                     colObjs[col.columnID] = [];
+                    colObjs2[col.columnID] = {};
                 })
                 setColAddCards(colObjs);
+                setColUpdateCards(colObjs2);
             }
             props.setIsLoading(false);
         },
@@ -267,13 +280,80 @@ function Board(props) {
         colObjs[colID].splice(index, 1);
         setColAddCards(colObjs);
       }
-
   }
+
   const handleAddNewCardChange = (evt, colID, index) => {
         const colObjs = Object.assign({}, colAddCards);
         colObjs[colID][index] = evt.target.value;
         setColAddCards(colObjs);
   }
+
+  // Update Card
+  const handleColUpdateCard = (colID, cardID, oldContent) => {
+    const colObjs = Object.assign({}, colUpdateCards);
+    colObjs[colID][cardID] = oldContent;
+    setColUpdateCards(colObjs);
+  }
+
+  const handleUpdateCardChange = (evt, colID, cardID) => {
+    const colObjs = Object.assign({}, colUpdateCards);
+    colObjs[colID][cardID] = evt.target.value;
+    setColUpdateCards(colObjs);
+    }
+
+  const handleUpdateCard = (colID, cardID) => {
+    const content = colUpdateCards[colID][cardID];
+    if (content){
+        const user = AuthService.getCurrentUser();
+        if (!user){
+            return;
+        }
+        props.setIsLoading(true);
+        const requestOptions = {
+            method: 'POST',
+            headers: Object.assign({
+                'Content-Type': 'application/json'   
+            }, authHeader()),
+            body: JSON.stringify({ 
+                cardID: cardID,
+                content: content
+            })
+        };
+        return fetch(constant.api + constant.cardPath + constant.updateCard, requestOptions)
+            .then(response => response.json())
+            .then(result => {
+                if (result.isSuccess){
+                    // Update cards in board
+                    const newBoard = Object.assign(board);
+                    newBoard.columns.forEach((col) => {
+                        if (col.columnID == colID){
+                            col.cards.forEach((card) => {
+                                if (card.cardID == cardID){
+                                    card.content = content;
+                                    return;
+                                }
+                            })
+                            return;
+                        }
+                    })
+                    setBoard(newBoard);
+                    const colObjs = Object.assign({}, colUpdateCards);
+                    colObjs[colID][cardID] = ""
+                    setColUpdateCards(colObjs);
+                }
+                props.setIsLoading(false);
+        }, (error) => {
+            if (error) {
+              props.setIsLoading(false);
+            }
+        })
+    } else {
+      const colObjs = Object.assign({}, colUpdateCards);
+      colObjs[colID][cardID] = "";
+      setColUpdateCards(colObjs);
+    }
+
+ }
 
   const bgcolor = ["primary.main", "secondary.main", "error.main"];
   const color = ["primary.contrastText", "secondary.contrastText", "error.contrastText"];
@@ -363,7 +443,38 @@ function Board(props) {
                             ''
                         }
                         {col.cards.map((card, index2) => {
-                            return (
+                            return (colUpdateCards[col.columnID] &&colUpdateCards[col.columnID][card.cardID])? 
+                            (
+                                <Box p={3} align="left" className={classes.addBox}
+                                    border={5}
+                                    borderColor={bgcolor[index % board.numOfCol]}
+                                    marginTop={2}
+                                    className={classes.addCard}>
+                                    <TextField
+                                        multiline="true"
+                                        rowsMax="10"
+                                        name="content"
+                                        required
+                                        fullWidth
+                                        id="content"
+                                        
+                                        InputProps={{ disableUnderline: true }}
+                                        className={classes.addCardTextField}
+                                        value={colUpdateCards[col.columnID][card.cardID]}
+                                        onChange={(evt) => handleUpdateCardChange(evt, col.columnID, card.cardID)}
+                                    />
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        size="small"
+                                        className={classes.saveCardIcon}
+                                        onClick={(evt) => handleUpdateCard(col.columnID, card.cardID)}
+                                        >
+                                            DONE
+                                    </Button>
+                                </Box>
+                            ) :
+                            (
                                 <Box p={3} align="left" bgcolor={bgcolor[index % board.numOfCol]} color={color[index % board.numOfCol]} 
                                     border={3}
                                     borderColor="#888888"
@@ -371,6 +482,7 @@ function Board(props) {
                                     className={classes.card}
                                     >
                                     <Typography>{card.content}</Typography>
+                                    <CreateIcon className={classes.updateCardIcon} onClick={(evt) => handleColUpdateCard(col.columnID, card.cardID, card.content)}/>
                                     <DeleteOutlineIcon className={classes.deleteCardIcon} onClick={(evt) => openDeleteDialog(card)}/>
                                 </Box>
                             )

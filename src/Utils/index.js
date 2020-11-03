@@ -13,6 +13,7 @@ const updateBoardName = '/updateName'
 const cardPath = '/cards';
 const deleteCard = '/delete';
 const addCard = '/add';
+const updateCard = '/update';
 
 // User
 const userPath = '/user';
@@ -39,6 +40,7 @@ export default {
     cardPath,
     deleteCard,
     addCard,
+    updateCard,
     // User
     userPath,
     logInPath,
