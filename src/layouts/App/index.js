@@ -20,6 +20,8 @@ import Profile from '../../components/Profile';
 import Board from '../../components/Board';
 import ShareBoard from '../../components/ShareBoard';
 import Loading from '../../layouts/Loading';
+import createHashHistory from 'history/createHashHistory';
+    const hashHistory = createHashHistory({ basename: process.env.PUBLIC_URL });
 
 function App() {
   const [isLoading, setIsLoading] = useState(false);
@@ -28,7 +30,7 @@ function App() {
     <React.Fragment>
       <CssBaseline />
       <Loading loading={isLoading}/>
-      <Router basename={process.env.PUBLIC_URL}>
+      <Router history={hashHistory} basename={process.env.PUBLIC_URL}>
         <Switch>
           <Route path="/logIn">
               {/* Header */}
