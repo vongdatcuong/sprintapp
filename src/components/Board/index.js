@@ -65,6 +65,16 @@ const useStyles = makeStyles((theme) => ({
     formMessageFail: {
         color: '#ff1500'
     },
+    addCard: {
+        padding: '10px'
+    },
+    addCardTextField: {
+        minHeight: '50px'
+    },
+    saveCardIcon: {
+        backgroundColor: '#4BB543',
+        fontSize: '0.8em'
+    },
 }));
 
 
@@ -85,6 +95,11 @@ function Board(props) {
   // Card
   const [openDel, setOpenDel] = useState(false);
   const [delCard, setDelCard] = useState(null);
+
+  // Add Card
+  const [colAddCards, setColAddCards] = useState({});
+
+
   useEffect(() => {
     props.setIsLoading(true);
     const requestOptions = {
@@ -97,10 +112,14 @@ function Board(props) {
       .then(res => res.json())
       .then(
         (result) => {
-            console.log(result);
             if (result.isSuccess){
                 setBoard(result.board);
                 setNewBoardName(result.board.name);
+                const colObjs = {};
+                result.board.columns.forEach((col, index) => {
+                    colObjs[col.columnID] = [];
+                })
+                setColAddCards(colObjs);
             }
             props.setIsLoading(false);
         },
@@ -197,6 +216,65 @@ function Board(props) {
     setOpenDel(true);
   }
 
+  const handleColAddCard = (colID) => {
+    const colObjs = Object.assign({}, colAddCards);
+    colObjs[colID].push("");
+    setColAddCards(colObjs);
+  }
+
+  const handleAddNewCard = (colID, index) => {
+      const content = colAddCards[colID][index];
+      if (content){
+        const user = AuthService.getCurrentUser();
+        if (!user){
+            return;
+        }
+        props.setIsLoading(true);
+        const requestOptions = {
+            method: 'POST',
+            headers: Object.assign({
+                'Content-Type': 'application/json'   
+            }, authHeader()),
+            body: JSON.stringify({ 
+                columnID: colID,
+                content: content
+            })
+        };
+        return fetch(constant.api + constant.cardPath + constant.addBoard, requestOptions)
+            .then(response => response.json())
+            .then(result => {
+                if (result.isSuccess){
+                    // Update cards in board
+                    const newBoard = Object.assign(board);
+                    newBoard.columns.forEach((col) => {
+                        if (col.columnID == colID){
+                            col.cards.push(result.card);
+                        }
+                    })
+                    setBoard(newBoard);
+                    const colObjs = Object.assign({}, colAddCards);
+                    colObjs[colID].splice(index, 1);
+                    setColAddCards(colObjs);
+                }
+                props.setIsLoading(false);
+        }, (error) => {
+            if (error) {
+              props.setIsLoading(false);
+            }
+        })
+      } else {
+        const colObjs = Object.assign({}, colAddCards);
+        colObjs[colID].splice(index, 1);
+        setColAddCards(colObjs);
+      }
+
+  }
+  const handleAddNewCardChange = (evt, colID, index) => {
+        const colObjs = Object.assign({}, colAddCards);
+        colObjs[colID][index] = evt.target.value;
+        setColAddCards(colObjs);
+  }
+
   const bgcolor = ["primary.main", "secondary.main", "error.main"];
   const color = ["primary.contrastText", "secondary.contrastText", "error.contrastText"];
   const boardNameUI = [];
@@ -244,9 +322,46 @@ function Board(props) {
                         <Box bgcolor={bgcolor[index % board.numOfCol]} color={color[index % board.numOfCol]} p={0} align="center">
                             <Typography variant="h6">{col.columnName}</Typography>
                         </Box>
-                        <Box p={0} align="center" className={classes.addBox}>
+                        <Box p={0} align="center" className={classes.addBox} onClick={() => handleColAddCard(col.columnID)}>
                             <AddIcon/>
                         </Box>
+                        {
+                            (colAddCards[col.columnID])?
+                            colAddCards[col.columnID].map((newCard, index2) => {
+                                return (
+                                    <Box p={3} align="left" className={classes.addBox}
+                                        border={5}
+                                        borderColor={bgcolor[index % board.numOfCol]}
+                                        marginTop={2}
+                                        className={classes.addCard}>
+                                        <TextField
+                                            multiline="true"
+                                            rowsMax="10"
+                                            name="content"
+                                            required
+                                            fullWidth
+                                            id="content"
+                                            autoFocus
+                                            InputProps={{ disableUnderline: true }}
+                                            className={classes.addCardTextField}
+                                            value={colAddCards[col.columnID][index2]}
+                                            onChange={(evt) => handleAddNewCardChange(evt, col.columnID, index2)}
+                                        />
+                                        <Button
+                                            variant="contained"
+                                            color="primary"
+                                            size="small"
+                                            className={classes.saveCardIcon}
+                                            onClick={(evt) => handleAddNewCard(col.columnID, index2)}
+                                            >
+                                                ADD
+                                        </Button>
+                                    </Box>
+                                )
+                            })
+                            :
+                            ''
+                        }
                         {col.cards.map((card, index2) => {
                             return (
                                 <Box p={3} align="left" bgcolor={bgcolor[index % board.numOfCol]} color={color[index % board.numOfCol]} 

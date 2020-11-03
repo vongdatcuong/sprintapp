@@ -64,6 +64,7 @@ export default function LogIn(props) {
         if (result.isSuccess){
             history.push('/dashboard');
         } else {
+          setPassword("");
             // Error message
             setErrMsg(result.message);
         }
@@ -104,6 +105,7 @@ export default function LogIn(props) {
             name="username"
             autoComplete="username"
             autoFocus
+            value={username}
             error={username === ""}
             helperText={username === "" ? 'Enter Username' : ' '}
             onChange={(evt) => handleUsernameChange(evt)}
@@ -118,6 +120,7 @@ export default function LogIn(props) {
             type="password"
             id="password"
             autoComplete="current-password"
+            value={password}
             error={password === ""}
             helperText={password === "" ? 'Enter password' : ' '}
             onChange={(evt) => handlePasswordChange(evt)}
