@@ -29,6 +29,35 @@ class AuthService {
             })
     }
 
+    logInWithGoogle(googleID) {
+        const requestOptions = {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json' ,
+            },
+            body: JSON.stringify({ 
+                googleID: googleID
+            })
+        };
+        return fetch(constant.api + constant.userPath + constant.logInWithGoogle, requestOptions)
+            .then(response => response.json())
+            .then(result => {
+                if (result.isSuccess){
+                    localStorage.setItem("user", JSON.stringify(result.user));
+                    return {
+                        isSuccess: true,
+                        user: result.user
+                    };
+                } else {
+                    return {
+                        isSuccess: false,
+                        message: result.message
+                    }
+                }
+                
+            })
+    }
+
     logOut(){
         localStorage.removeItem("user");
     }

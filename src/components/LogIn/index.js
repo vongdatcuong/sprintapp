@@ -13,12 +13,14 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import FormHelperText from '@material-ui/core/FormHelperText';
+import FacebookIcon from '@material-ui/icons/Facebook';
 
 // Components
 import Footer from '../../layouts/Footer';
 
 // Constant && Services
 import AuthService from '../../services/auth.service';
+import constant from '../../Utils/';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -37,10 +39,21 @@ const useStyles = makeStyles((theme) => ({
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
+    backgroundColor: '#1976d2'
   },
   formMessage: {
       textAlign: 'center',
       fontSize: '1.1em'
+  },
+  googleBtn: {
+    margin: theme.spacing(0, 0, 2, 0),
+    backgroundColor: '#dd4b39'
+  },
+  anchor: {
+    textDecoration: 'none',
+    '&:hover': {
+      textDecoration: 'none'
+    }
   }
 }));
 
@@ -82,6 +95,24 @@ export default function LogIn(props) {
 
   function handlePasswordChange(evt){
     setPassword(evt.target.value);
+  }
+
+  const handleLogInGoolge = () => {
+    props.setIsLoading(true);
+    const fetch = AuthService.logInWithGoogle().then(result => {
+        if (result.isSuccess){
+            history.push('/dashboard');
+        } else {
+          setPassword("");
+            // Error message
+            setErrMsg(result.message);
+        }
+        props.setIsLoading(false);
+    }, (error) => {
+      if (error) {
+        props.setIsLoading(false);
+      }
+    });
   }
 
   return (
@@ -132,15 +163,6 @@ export default function LogIn(props) {
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
           />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-          >
-            Sign In
-          </Button>
           <Grid container>
             <Grid item xs>
               <Link href="#" variant="body2">
@@ -153,6 +175,35 @@ export default function LogIn(props) {
               </Link>
             </Grid>
           </Grid>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+          >
+            Sign In
+          </Button>
+          <a href="http://localhost:8080/user/auth/google" className={classes.anchor}>
+            <Button
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.googleBtn}
+              startIcon={<FacebookIcon />}
+              //onClick={(evt) => handleLogInGoolge(evt)}
+              >Sign In With google
+            </Button>
+          </a>
+            <Button
+              fullWidth
+              variant="contained"
+              color="primary"
+              startIcon={<FacebookIcon />}
+              onClick={handleLogInGoolge}
+            >
+              Sign In With Facebook
+            </Button>
         </form>
       </div>
     </Container>

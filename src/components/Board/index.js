@@ -46,13 +46,13 @@ const useStyles = makeStyles((theme) => ({
     },
     deleteCardIcon: {
         position: 'absolute',
-        top: '10%',
+        top: '5%',
         right: '5px',
         cursor: 'pointer'
     },
     updateCardIcon: {
         position: 'absolute',
-        top: '10%',
+        top: '5%',
         right: '30px',
         cursor: 'pointer'
     },
@@ -82,6 +82,9 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: '#4BB543',
         fontSize: '0.8em'
     },
+    cardContent: {
+        wordWrap: 'break-word'
+    }
 }));
 
 
@@ -391,7 +394,7 @@ function Board(props) {
   return (
     <main>
       <Container className={classes.cardGrid} maxWidth="md">
-      <ConfirmDialog open={openDel} setOpen={setOpenDel} action={() => handleDeleteCard(delCard)}>Confirm to delete card <b>{(delCard)? delCard.content : ''}</b></ConfirmDialog>
+      <ConfirmDialog open={openDel} setOpen={setOpenDel} action={() => handleDeleteCard(delCard)}><h3 style={{'text-align': 'center'}}>Confirm to delete card</h3> <b>{(delCard)? delCard.content : ''}</b></ConfirmDialog>
         <Typography gutterBottom variant="h4" component="h2" className="title-blue" style={{fontWeight: '500'}}>
             {boardNameUI}
         </Typography>            
@@ -481,7 +484,7 @@ function Board(props) {
                                     marginTop={2}
                                     className={classes.card}
                                     >
-                                    <Typography>{card.content}</Typography>
+                                    <Typography variant="body1" className={classes.cardContent}>{card.content}</Typography>
                                     <CreateIcon className={classes.updateCardIcon} onClick={(evt) => handleColUpdateCard(col.columnID, card.cardID, card.content)}/>
                                     <DeleteOutlineIcon className={classes.deleteCardIcon} onClick={(evt) => openDeleteDialog(card)}/>
                                 </Box>

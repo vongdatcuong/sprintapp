@@ -19,6 +19,7 @@ import SignUp from '../../components/SignUp';
 import Profile from '../../components/Profile';
 import Board from '../../components/Board';
 import ShareBoard from '../../components/ShareBoard';
+import Redirecting from '../../components/Redirecting';
 import Loading from '../../layouts/Loading';
 import createHashHistory from 'history/createHashHistory';
     const hashHistory = createHashHistory({ basename: process.env.PUBLIC_URL });
@@ -73,6 +74,9 @@ function App() {
             {/* Footer */}
             <Footer/>
             {/* End footer */}
+          </Route>
+          <Route path="/redirectGoogle/:googleID">
+            <Redirecting/>
           </Route>
           <Route path="/">
             <Redirect to="/dashboard"/>

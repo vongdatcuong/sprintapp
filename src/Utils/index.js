@@ -1,5 +1,5 @@
-const api = 'https://shrouded-bastion-84248.herokuapp.com';
-//const api = 'http://localhost:8080';
+//const api = 'https://shrouded-bastion-84248.herokuapp.com';
+const api = 'http://localhost:8080';
 
 // Board
 const boardPath = '/board';
@@ -20,6 +20,7 @@ const userPath = '/user';
 const logInPath = '/logIn';
 const signUpPath = '/signUp';
 const updateProfilePath = '/updateProfile';
+const logInWithGoogle = '/logInWithGoogle';
 
 function queryParams(params) {
     return Object.keys(params)
@@ -46,6 +47,7 @@ export default {
     logInPath,
     signUpPath,
     updateProfilePath,
+    logInWithGoogle,
     // 
     queryParams
 }

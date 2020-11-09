@@ -28,6 +28,10 @@ const useStyles = makeStyles((theme) => ({
     button: {
         margin: theme.spacing(1),
     },
+    contentText: {
+      textAlign: 'left',
+      wordWrap: 'break-word'
+    }
 }))
 
 export default function AddBoardDialog(props) {
@@ -46,7 +50,7 @@ export default function AddBoardDialog(props) {
       <Dialog open={props.open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle className={classes.title} component='h1' id="form-dialog-title">Confirmation</DialogTitle>
         <DialogContent className={classes.content}>
-            <DialogContentText>
+            <DialogContentText className={classes.contentText}>
                 {props.children}
             </DialogContentText>
         </DialogContent>
