@@ -58,6 +58,35 @@ class AuthService {
             })
     }
 
+    logInWithFacebook(facebookID) {
+        const requestOptions = {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json' ,
+            },
+            body: JSON.stringify({ 
+                facebookID: facebookID
+            })
+        };
+        return fetch(constant.api + constant.userPath + constant.logInWithFacebook, requestOptions)
+            .then(response => response.json())
+            .then(result => {
+                if (result.isSuccess){
+                    localStorage.setItem("user", JSON.stringify(result.user));
+                    return {
+                        isSuccess: true,
+                        user: result.user
+                    };
+                } else {
+                    return {
+                        isSuccess: false,
+                        message: result.message
+                    }
+                }
+                
+            })
+    }
+
     logOut(){
         localStorage.removeItem("user");
     }

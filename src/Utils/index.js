@@ -20,7 +20,10 @@ const userPath = '/user';
 const logInPath = '/logIn';
 const signUpPath = '/signUp';
 const updateProfilePath = '/updateProfile';
+const authGooglePath = '/auth/google'
 const logInWithGoogle = '/logInWithGoogle';
+const authFbPath = '/auth/facebook'
+const logInWithFacebook = '/logInWithFacebook';
 
 function queryParams(params) {
     return Object.keys(params)
@@ -47,7 +50,10 @@ export default {
     logInPath,
     signUpPath,
     updateProfilePath,
+    authGooglePath,
     logInWithGoogle,
+    authFbPath,
+    logInWithFacebook,
     // 
     queryParams
 }

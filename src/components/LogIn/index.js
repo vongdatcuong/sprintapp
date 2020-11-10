@@ -14,6 +14,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FacebookIcon from '@material-ui/icons/Facebook';
+import GoogleIcon from '../../vendors/images/google.png';
 
 // Components
 import Footer from '../../layouts/Footer';
@@ -47,7 +48,14 @@ const useStyles = makeStyles((theme) => ({
   },
   googleBtn: {
     margin: theme.spacing(0, 0, 2, 0),
-    backgroundColor: '#dd4b39'
+    border: '1.5px solid #dd4b39',
+    color: '#dd4b39'
+  },
+  googleIcon: {
+    marginRight: '10px'
+  },
+  facebookIcon: {
+    fontSize: '24px !important'
   },
   anchor: {
     textDecoration: 'none',
@@ -184,26 +192,26 @@ export default function LogIn(props) {
           >
             Sign In
           </Button>
-          <a href="http://localhost:8080/user/auth/google" className={classes.anchor}>
+          <a href={constant.api + constant.userPath + constant.authGooglePath} className={classes.anchor}>
             <Button
-              fullWidth
-              variant="contained"
-              color="primary"
+              fullWidth              
+              variant="outlined" color="secondary"
               className={classes.googleBtn}
-              startIcon={<FacebookIcon />}
-              //onClick={(evt) => handleLogInGoolge(evt)}
-              >Sign In With google
+              >
+                <img src={GoogleIcon} className={classes.googleIcon}/>
+                Sign In With google
             </Button>
           </a>
+          <a href={constant.api + constant.userPath + constant.authFbPath} className={classes.anchor}>
             <Button
               fullWidth
               variant="contained"
               color="primary"
-              startIcon={<FacebookIcon />}
-              onClick={handleLogInGoolge}
+              startIcon={<FacebookIcon className={classes.facebookIcon}/>}
             >
               Sign In With Facebook
             </Button>
+          </a>
         </form>
       </div>
     </Container>
