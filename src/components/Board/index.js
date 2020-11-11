@@ -112,6 +112,11 @@ function Board(props) {
   // Update Cảd
   const [colUpdateCards, setColUpdateCards] = useState({});
 
+  const [dragging, setDragging] = useState(-1);
+
+  const [bgcolor, setBgcolor] = useState(["primary.main", "secondary.main", "error.main"]);
+  const [color, setColor] = useState(["primary.contrastText", "secondary.contrastText", "error.contrastText"]);
+
   useEffect(() => {
     props.setIsLoading(true);
     const requestOptions = {
@@ -358,8 +363,35 @@ function Board(props) {
 
  }
 
-  const bgcolor = ["primary.main", "secondary.main", "error.main"];
-  const color = ["primary.contrastText", "secondary.contrastText", "error.contrastText"];
+
+    const handleDragging = (evt, index) => {
+       setDragging(index);
+    }
+    const handleDragOver = (evt) => {
+        evt.preventDefault();
+     }
+    const handleDropped = (evt, index) => {
+        if (dragging == -1 || index == -1){
+            return;
+        }
+        const newBoard = Object.assign(board);
+        swapTwoElements(newBoard.columns, dragging, index);
+        //const colAddObjs = Object.assign({}, colAddCards);
+        //swapTwoElements(colAddObjs, dragging, dropped);
+        //const colUpdateObjs = Object.assign({}, colUpdateCards);
+        //swapTwoElements(colUpdateObjs, dragging, dropped);
+        const newBgcolor = bgcolor.slice();
+        swapTwoElements(newBgcolor, dragging, index);
+        const newColor = color.slice();
+        swapTwoElements(newColor, dragging, index);
+        setDragging(-1);        
+        setBoard(newBoard);
+        //setColAddCards(colAddObjs);
+        //setColAddCards(colUpdateObjs);
+        setBgcolor(newBgcolor);
+        setColor(newColor);
+     }
+
   const boardNameUI = [];
 
   if (isEditingBName){
@@ -401,7 +433,11 @@ function Board(props) {
         <Grid container spacing={4}>
         {board.columns.map((col, index) => {
                 return (
-                    <Grid item xs={12} sm={4} md={4}>
+                    <Grid item xs={12} sm={4} md={4} draggable="true" 
+                        onDragStart={(evt) => handleDragging(evt, index)}
+                        onDragOver={(evt) => handleDragOver(evt)} 
+                        onDrop={(evt) => handleDropped(evt, index)}
+                    >
                         <Box bgcolor={bgcolor[index % board.numOfCol]} color={color[index % board.numOfCol]} p={0} align="center">
                             <Typography variant="h6">{col.columnName}</Typography>
                         </Box>
@@ -499,4 +535,9 @@ function Board(props) {
   );
 }
 
+function swapTwoElements(arr, idx1, idx2){
+    const temp = arr[idx2];
+    arr[idx2] = arr[idx1];
+    arr[idx1] = temp;
+}
 export default Board;

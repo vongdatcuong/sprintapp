@@ -105,24 +105,6 @@ export default function LogIn(props) {
     setPassword(evt.target.value);
   }
 
-  const handleLogInGoolge = () => {
-    props.setIsLoading(true);
-    const fetch = AuthService.logInWithGoogle().then(result => {
-        if (result.isSuccess){
-            history.push('/dashboard');
-        } else {
-          setPassword("");
-            // Error message
-            setErrMsg(result.message);
-        }
-        props.setIsLoading(false);
-    }, (error) => {
-      if (error) {
-        props.setIsLoading(false);
-      }
-    });
-  }
-
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />

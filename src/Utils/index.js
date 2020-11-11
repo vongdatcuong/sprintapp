@@ -1,5 +1,5 @@
-//const api = 'https://shrouded-bastion-84248.herokuapp.com';
-const api = 'http://localhost:8080';
+const api = 'https://shrouded-bastion-84248.herokuapp.com';
+//const api = 'http://localhost:8080';
 
 // Board
 const boardPath = '/board';
