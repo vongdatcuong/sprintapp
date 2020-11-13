@@ -46,13 +46,13 @@ const useStyles = makeStyles((theme) => ({
     },
     deleteCardIcon: {
         position: 'absolute',
-        top: '10%',
+        top: '5%',
         right: '5px',
         cursor: 'pointer'
     },
     updateCardIcon: {
         position: 'absolute',
-        top: '10%',
+        top: '5%',
         right: '30px',
         cursor: 'pointer'
     },
@@ -82,6 +82,9 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: '#4BB543',
         fontSize: '0.8em'
     },
+    cardContent: {
+        wordWrap: 'break-word'
+    }
 }));
 
 
@@ -90,7 +93,7 @@ function ShareBoard(props) {
   if (!AuthService.getCurrentUser()){
       history.push('/logIn');
   } 
-  const { userID, boardID } = useParams(); 
+  const { userID, boardID } = useParams();  
   const classes = useStyles();
   const [board, setBoard] = useState({columns: []});
   // Board
@@ -106,8 +109,14 @@ function ShareBoard(props) {
   // Add Card
   const [colAddCards, setColAddCards] = useState({});
 
-  // Update Card
+  // Update Cảd
   const [colUpdateCards, setColUpdateCards] = useState({});
+
+  const [dragging, setDragging] = useState(-1);
+
+  const bgcolor = ["primary.main", "secondary.main", "error.main"];
+  const color = ["primary.contrastText", "secondary.contrastText", "error.contrastText"];
+
   useEffect(() => {
     props.setIsLoading(true);
     const requestOptions = {
@@ -359,8 +368,54 @@ function ShareBoard(props) {
 
  }
 
-  const bgcolor = ["primary.main", "secondary.main", "error.main"];
-  const color = ["primary.contrastText", "secondary.contrastText", "error.contrastText"];
+
+    const handleDragging = (evt, index) => {
+       setDragging(index);
+    }
+    const handleDragOver = (evt) => {
+        evt.preventDefault();
+     }
+    const handleDropped = (evt, index) => {
+        if (dragging == -1 || index == -1 || dragging == index){
+            setDragging(-1);
+            return;
+        }
+        props.setIsLoading(true);
+        const requestOptions = {
+            method: 'POST',
+            headers: Object.assign({
+                'Content-Type': 'application/json'   
+            }, authHeader()),
+            body: JSON.stringify({ 
+                boardID: board.boardID,
+                colID1: board.columns[dragging].columnID,
+                colID2: board.columns[index].columnID,
+                userID: userID
+            })
+        };
+        return fetch(constant.api + constant.allBoardPath + constant.swapColumn, requestOptions)
+            .then(response => response.json())
+            .then(result => {
+                if (result.isSuccess){
+                    // Update columns
+                    const newBoard = Object.assign(board);
+                    swapTwoElements(newBoard.columns, dragging, index);
+                    const newBgcolor = bgcolor.slice();
+                    swapTwoElements(newBgcolor, dragging, index);
+                    const newColor = color.slice();
+                    swapTwoElements(newColor, dragging, index);
+                    setDragging(-1);        
+                    setBoard(newBoard);
+                }
+                props.setIsLoading(false);
+        }, (error) => {
+            if (error) {
+              props.setIsLoading(false);
+            }
+        })
+        
+     }
+
   const boardNameUI = [];
 
   if (isEditingBName){
@@ -395,15 +450,19 @@ function ShareBoard(props) {
   return (
     <main>
       <Container className={classes.cardGrid} maxWidth="md">
-      <ConfirmDialog open={openDel} setOpen={setOpenDel} action={() => handleDeleteCard(delCard)}>Confirm to delete card <b>{(delCard)? delCard.content : ''}</b></ConfirmDialog>
+      <ConfirmDialog open={openDel} setOpen={setOpenDel} action={() => handleDeleteCard(delCard)}><h3 style={{'text-align': 'center'}}>Confirm to delete card</h3> <b>{(delCard)? delCard.content : ''}</b></ConfirmDialog>
         <Typography gutterBottom variant="h4" component="h2" className="title-blue" style={{fontWeight: '500'}}>
             {boardNameUI}
         </Typography>            
         <Grid container spacing={4}>
         {board.columns.map((col, index) => {
                 return (
-                    <Grid item xs={12} sm={4} md={4}>
-                        <Box bgcolor={bgcolor[index % board.numOfCol]} color={color[index % board.numOfCol]} p={0} align="center">
+                    <Grid item xs={12} sm={4} md={4} draggable="true" 
+                        onDragStart={(evt) => handleDragging(evt, index)}
+                        onDragOver={(evt) => handleDragOver(evt)} 
+                        onDrop={(evt) => handleDropped(evt, index)}
+                    >
+                        <Box bgcolor={bgcolor[col.columnTypeID - 1]} color={color[col.columnTypeID - 1]} p={0} align="center">
                             <Typography variant="h6">{col.columnName}</Typography>
                         </Box>
                         <Box p={0} align="center" className={classes.addBox} onClick={() => handleColAddCard(col.columnID)}>
@@ -415,7 +474,7 @@ function ShareBoard(props) {
                                 return (
                                     <Box p={3} align="left" className={classes.addBox}
                                         border={5}
-                                        borderColor={bgcolor[index % board.numOfCol]}
+                                        borderColor={bgcolor[col.columnTypeID - 1]}
                                         marginTop={2}
                                         className={classes.addCard}>
                                         <TextField
@@ -451,7 +510,7 @@ function ShareBoard(props) {
                             (
                                 <Box p={3} align="left" className={classes.addBox}
                                     border={5}
-                                    borderColor={bgcolor[index % board.numOfCol]}
+                                    borderColor={bgcolor[col.columnTypeID - 1]}
                                     marginTop={2}
                                     className={classes.addCard}>
                                     <TextField
@@ -479,13 +538,13 @@ function ShareBoard(props) {
                                 </Box>
                             ) :
                             (
-                                <Box p={3} align="left" bgcolor={bgcolor[index % board.numOfCol]} color={color[index % board.numOfCol]} 
+                                <Box p={3} align="left" bgcolor={bgcolor[col.columnTypeID - 1]} color={color[col.columnTypeID - 1]} 
                                     border={3}
                                     borderColor="#888888"
                                     marginTop={2}
                                     className={classes.card}
                                     >
-                                    <Typography>{card.content}</Typography>
+                                    <Typography variant="body1" className={classes.cardContent}>{card.content}</Typography>
                                     <CreateIcon className={classes.updateCardIcon} onClick={(evt) => handleColUpdateCard(col.columnID, card.cardID, card.content)}/>
                                     <DeleteOutlineIcon className={classes.deleteCardIcon} onClick={(evt) => openDeleteDialog(card)}/>
                                 </Box>
@@ -500,4 +559,9 @@ function ShareBoard(props) {
   );
 }
 
+function swapTwoElements(arr, idx1, idx2){
+    const temp = arr[idx2];
+    arr[idx2] = arr[idx1];
+    arr[idx1] = temp;
+}
 export default ShareBoard;

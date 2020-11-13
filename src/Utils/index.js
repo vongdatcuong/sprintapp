@@ -6,8 +6,9 @@ const boardPath = '/board';
 const allBoardPath = '/boards';
 const myBoardPath = '/myBoard';
 const addBoard = '/add';
-const deleteBoard = '/delete'
-const updateBoardName = '/updateName'
+const deleteBoard = '/delete';
+const updateBoardName = '/updateName';
+const swapColumn = '/swapColumn';
 
 // Card
 const cardPath = '/cards';
@@ -40,6 +41,7 @@ export default {
     addBoard,
     deleteBoard,
     updateBoardName,
+    swapColumn,
     //Card
     cardPath,
     deleteCard,

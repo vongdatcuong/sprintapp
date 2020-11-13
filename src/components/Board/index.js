@@ -114,8 +114,8 @@ function Board(props) {
 
   const [dragging, setDragging] = useState(-1);
 
-  const [bgcolor, setBgcolor] = useState(["primary.main", "secondary.main", "error.main"]);
-  const [color, setColor] = useState(["primary.contrastText", "secondary.contrastText", "error.contrastText"]);
+  const bgcolor = ["primary.main", "secondary.main", "error.main"];
+  const color = ["primary.contrastText", "secondary.contrastText", "error.contrastText"];
 
   useEffect(() => {
     props.setIsLoading(true);
@@ -371,25 +371,43 @@ function Board(props) {
         evt.preventDefault();
      }
     const handleDropped = (evt, index) => {
-        if (dragging == -1 || index == -1){
+        if (dragging == -1 || index == -1 || dragging == index){
+            setDragging(-1);
             return;
         }
-        const newBoard = Object.assign(board);
-        swapTwoElements(newBoard.columns, dragging, index);
-        //const colAddObjs = Object.assign({}, colAddCards);
-        //swapTwoElements(colAddObjs, dragging, dropped);
-        //const colUpdateObjs = Object.assign({}, colUpdateCards);
-        //swapTwoElements(colUpdateObjs, dragging, dropped);
-        const newBgcolor = bgcolor.slice();
-        swapTwoElements(newBgcolor, dragging, index);
-        const newColor = color.slice();
-        swapTwoElements(newColor, dragging, index);
-        setDragging(-1);        
-        setBoard(newBoard);
-        //setColAddCards(colAddObjs);
-        //setColAddCards(colUpdateObjs);
-        setBgcolor(newBgcolor);
-        setColor(newColor);
+        props.setIsLoading(true);
+        const requestOptions = {
+            method: 'POST',
+            headers: Object.assign({
+                'Content-Type': 'application/json'   
+            }, authHeader()),
+            body: JSON.stringify({ 
+                boardID: board.boardID,
+                colID1: board.columns[dragging].columnID,
+                colID2: board.columns[index].columnID,
+            })
+        };
+        return fetch(constant.api + constant.allBoardPath + constant.swapColumn, requestOptions)
+            .then(response => response.json())
+            .then(result => {
+                if (result.isSuccess){
+                    // Update columns
+                    const newBoard = Object.assign(board);
+                    swapTwoElements(newBoard.columns, dragging, index);
+                    const newBgcolor = bgcolor.slice();
+                    swapTwoElements(newBgcolor, dragging, index);
+                    const newColor = color.slice();
+                    swapTwoElements(newColor, dragging, index);
+                    setDragging(-1);        
+                    setBoard(newBoard);
+                }
+                props.setIsLoading(false);
+        }, (error) => {
+            if (error) {
+              props.setIsLoading(false);
+            }
+        })
+        
      }
 
   const boardNameUI = [];
@@ -438,7 +456,7 @@ function Board(props) {
                         onDragOver={(evt) => handleDragOver(evt)} 
                         onDrop={(evt) => handleDropped(evt, index)}
                     >
-                        <Box bgcolor={bgcolor[index % board.numOfCol]} color={color[index % board.numOfCol]} p={0} align="center">
+                        <Box bgcolor={bgcolor[col.columnTypeID - 1]} color={color[col.columnTypeID - 1]} p={0} align="center">
                             <Typography variant="h6">{col.columnName}</Typography>
                         </Box>
                         <Box p={0} align="center" className={classes.addBox} onClick={() => handleColAddCard(col.columnID)}>
@@ -450,7 +468,7 @@ function Board(props) {
                                 return (
                                     <Box p={3} align="left" className={classes.addBox}
                                         border={5}
-                                        borderColor={bgcolor[index % board.numOfCol]}
+                                        borderColor={bgcolor[col.columnTypeID - 1]}
                                         marginTop={2}
                                         className={classes.addCard}>
                                         <TextField
@@ -486,7 +504,7 @@ function Board(props) {
                             (
                                 <Box p={3} align="left" className={classes.addBox}
                                     border={5}
-                                    borderColor={bgcolor[index % board.numOfCol]}
+                                    borderColor={bgcolor[col.columnTypeID - 1]}
                                     marginTop={2}
                                     className={classes.addCard}>
                                     <TextField
@@ -514,7 +532,7 @@ function Board(props) {
                                 </Box>
                             ) :
                             (
-                                <Box p={3} align="left" bgcolor={bgcolor[index % board.numOfCol]} color={color[index % board.numOfCol]} 
+                                <Box p={3} align="left" bgcolor={bgcolor[col.columnTypeID - 1]} color={color[col.columnTypeID - 1]} 
                                     border={3}
                                     borderColor="#888888"
                                     marginTop={2}
